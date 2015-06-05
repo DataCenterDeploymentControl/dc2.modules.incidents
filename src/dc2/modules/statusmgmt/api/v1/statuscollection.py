@@ -48,6 +48,9 @@ except ImportError as e:
 _status_parser = RequestParser()
 _status_parser.add_argument('title', type=str, location='json', dest='title', required=True)
 _status_parser.add_argument('status', type=str, location='json', dest='status', required=True, default='new')
+_status_parser.add_argument('description', type=str, location='json', dest='description', required=True)
+_status_parser.add_argument('impact', type=str, location='json', dest='impact', required=True, default='internal')
+
 
 class StateCollection(RestResource):
 
@@ -69,16 +72,22 @@ class StateCollection(RestResource):
     @has_groups(['users', 'groups'])
     def post(self):
         try:
-            args = _status_parser.parse_args()
-            new_status = Status()
-            new_status.title = args.title
-            new_status.status = args.status
-            DB.session.add(new_status)
-            DB.session.commit()
-            return {'result': {
-                'status': new_status.to_dict
+            if g.auth_user is not None:
+                user = User.query.filter_by(username=g.auth_user).first()
+                args = _status_parser.parse_args()
+                new_status = Status()
+                new_status.title = args.title
+                new_status.status = args.status
+                new_status.description = args.description
+                new_status.impact = args.impact
+                new_status.created_by = user
+                DB.session.add(new_status)
+                DB.session.commit()
+                return {'result': {
+                    'status': new_status.to_dict
+                    }
                 }
-            }
+            return {'status': {'error': True, 'message': 'No User'}}, 404
         except Exception as e:
             app.logger.exception(msg='Exception occured')
             return {'status': {'error': True, 'message': e.args}}, 404

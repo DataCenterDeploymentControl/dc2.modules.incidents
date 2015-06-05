@@ -43,9 +43,15 @@ class Status(DB.Model):
         ('done', 'Done')
     ]
 
+    IMPACT = [
+        ('internal', 'BrandMaker Internal Customers'),
+        ('external', 'BrandMaker External Customers')
+    ]
     id = DB.Column(DB.Integer, primary_key=True)
     title = DB.Column(DB.String, nullable=False)
     status = DB.Column(ChoiceType(TYPES), nullable=False, default='new')
+    description = DB.Column(DB.String, nullable=False)
+    impact = DB.Column(ChoiceType(IMPACT), nullable=False, default='internal')
     created_at = DB.Column(DB.DateTime, default=datetime.datetime.utcnow())
     updated_at = DB.Column(DB.DateTime, onupdate=datetime.datetime.utcnow())
     created_by_user_id = DB.Column(DB.Integer, DB.ForeignKey('users.id'))
@@ -59,6 +65,8 @@ class Status(DB.Model):
             id=self.id,
             title=self.title,
             status=self.status.value,
+            description=self.description,
+            impact=self.impact.value,
             created_at=self.created_at.isoformat() if self.created_at is not None else None,
             updated_at=self.updated_at.isoformat() if self.updated_at is not None else None,
             created_by=self.created_by.username,
