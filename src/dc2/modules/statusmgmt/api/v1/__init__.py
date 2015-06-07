@@ -22,10 +22,13 @@ __author__ = 'stephan.adig'
 
 from .statuscollection import StateCollection
 from .statuscollection import StateEntries
+from .statuscollection import SentIncidentReport
 
 def init_versioned_endpoints(bp_api=None):
     if bp_api is None:
         raise ValueError('bp_api can not be None')
     bp_api.add_resource(StateCollection, '/v1/states')
     bp_api.add_resource(StateEntries, '/v1/states/<int:id>')
+    bp_api.add_resource(SentIncidentReport, '/v1/states/sent/<int:id>')
+
 

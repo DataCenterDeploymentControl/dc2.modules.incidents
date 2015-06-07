@@ -147,3 +147,20 @@ class StateEntries(RestResource):
                 app.logger.exception(msg="Exception occured")
                 return {'status': {'error': True, 'message': e.args}}, 404
         return {'status': {'error': True, 'message': 'no ID Given'}}, 404
+
+
+class SentIncidentReport(RestResource):
+
+    def __init__(self, *args, **kwargs):
+        super(SentIncidentReport, self).__init__(*args, **kwargs)
+
+    @needs_authentication
+    @has_groups(['users', 'groups'])
+    def get(self, id=None):
+        try:
+            if id is not None:
+                incident = Status.query.filter_by(id=id).first()
+
+        except Exception as e:
+            app.logger.exception(msg="Exception occured")
+

@@ -35,6 +35,7 @@ class Update(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     update = DB.Column(DB.String, nullable=False)
     status_id = DB.Column(DB.Integer, DB.ForeignKey('states.id'))
+    sent = DB.Column(DB.Boolean, default=False)
     created_at = DB.Column(DB.DateTime, default=datetime.datetime.utcnow())
     updated_at = DB.Column(DB.DateTime, onupdate=datetime.datetime.utcnow())
     created_by_user_id = DB.Column(DB.Integer, DB.ForeignKey('users.id'))
