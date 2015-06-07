@@ -27,6 +27,7 @@ try:
 except ImportError as e:
     raise(e)
 try:
+    from sqlalchemy import desc
     from sqlalchemy_utils import ChoiceType
 except ImportError as e:
     raise e
@@ -44,14 +45,15 @@ class Status(DB.Model):
     ]
 
     IMPACT = [
-        ('internal', 'BrandMaker Internal Customers'),
-        ('external', 'BrandMaker External Customers')
+        ('internal', 'Internal'),
+        ('external', 'External')
     ]
     id = DB.Column(DB.Integer, primary_key=True)
     title = DB.Column(DB.String, nullable=False)
     status = DB.Column(ChoiceType(TYPES), nullable=False, default='new')
     description = DB.Column(DB.String, nullable=False)
     impact = DB.Column(ChoiceType(IMPACT), nullable=False, default='internal')
+    updates = DB.relationship('Update', cascade="all, delete-orphan", order_by="Update.created_at.desc()")
     created_at = DB.Column(DB.DateTime, default=datetime.datetime.utcnow())
     updated_at = DB.Column(DB.DateTime, onupdate=datetime.datetime.utcnow())
     created_by_user_id = DB.Column(DB.Integer, DB.ForeignKey('users.id'))
@@ -64,9 +66,10 @@ class Status(DB.Model):
         return dict(
             id=self.id,
             title=self.title,
-            status=self.status.value,
+            status=self.status.code if self.status is not None else None,
             description=self.description,
-            impact=self.impact.value,
+            impact=self.impact.code if self.impact is not None else None,
+            updates=[update.to_dict for update in self.updates],
             created_at=self.created_at.isoformat() if self.created_at is not None else None,
             updated_at=self.updated_at.isoformat() if self.updated_at is not None else None,
             created_by=self.created_by.username,

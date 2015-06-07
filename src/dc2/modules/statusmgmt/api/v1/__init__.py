@@ -21,12 +21,11 @@
 __author__ = 'stephan.adig'
 
 from .statuscollection import StateCollection
+from .statuscollection import StateEntries
 
 def init_versioned_endpoints(bp_api=None):
     if bp_api is None:
         raise ValueError('bp_api can not be None')
     bp_api.add_resource(StateCollection, '/v1/states')
-    # bp_api.add_resource(XenServerEntries, '/v1/admin/servers/<int:id>')
-    # bp_api.add_resource(XenCollection, '/v1/servers')
-    # bp_api.add_resource(XenServerData, '/v1/servers/<int:id>')
+    bp_api.add_resource(StateEntries, '/v1/states/<int:id>')
 

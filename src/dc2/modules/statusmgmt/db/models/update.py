@@ -35,7 +35,6 @@ class Update(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     update = DB.Column(DB.String, nullable=False)
     status_id = DB.Column(DB.Integer, DB.ForeignKey('states.id'))
-    status = DB.relationship('Status', uselist=False, foreign_keys="Update.status_id")
     created_at = DB.Column(DB.DateTime, default=datetime.datetime.utcnow())
     updated_at = DB.Column(DB.DateTime, onupdate=datetime.datetime.utcnow())
     created_by_user_id = DB.Column(DB.Integer, DB.ForeignKey('users.id'))
@@ -48,7 +47,6 @@ class Update(DB.Model):
         return dict(
             id=self.id,
             update=self.update,
-            status=self.status.title if self.status is not None else None,
             created_at=self.created_at.isoformat(),
             updated_at=self.updated_at.isoformat() if self.updated_at is not None else None,
             created_by=self.created_by.username,
